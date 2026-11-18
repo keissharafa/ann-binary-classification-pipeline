@@ -18,20 +18,25 @@ def run_preprocessing(filepath='data/raw/BlaBla.csv', output_path='data/processe
     df.columns = df.columns.str.strip()
     print(f"[INFO] Kolom yang terdeteksi di dataset: {df.columns.tolist()}")
 
-    # Custom Encoding Kolom Umur (Kategori 1 s.d. 5)
-    if 'Umur' in df.columns:
-        print("[INFO] Melakukan custom encoding pada kolom 'Umur'...")
+    # Drop kolom 'A' agar fitur input hanya Umur (UMUR_TAHUN) dan B sampai M
+    if 'A' in df.columns:
+        df = df.drop(columns=['A'])
+        print("[INFO] Kolom 'A' dihapus (fitur input: UMUR_TAHUN, B s.d. M).")
+
+    # Custom Encoding Kolom UMUR_TAHUN (Kategori 1 s.d. 5)
+    if 'UMUR_TAHUN' in df.columns:
+        print("[INFO] Melakukan custom encoding pada kolom 'UMUR_TAHUN'...")
         conditions = [
-            (df['Umur'] <= 20),
-            (df['Umur'] >= 21) & (df['Umur'] <= 30),
-            (df['Umur'] >= 31) & (df['Umur'] <= 40),
-            (df['Umur'] >= 41) & (df['Umur'] <= 50),
-            (df['Umur'] > 50)
+            (df['UMUR_TAHUN'] <= 20),
+            (df['UMUR_TAHUN'] >= 21) & (df['UMUR_TAHUN'] <= 30),
+            (df['UMUR_TAHUN'] >= 31) & (df['UMUR_TAHUN'] <= 40),
+            (df['UMUR_TAHUN'] >= 41) & (df['UMUR_TAHUN'] <= 50),
+            (df['UMUR_TAHUN'] > 50)
         ]
         choices = [1, 2, 3, 4, 5]
-        df['Umur'] = np.select(conditions, choices, default=1)
+        df['UMUR_TAHUN'] = np.select(conditions, choices, default=1)
     else:
-        print("[WARN] Kolom 'Umur' tidak ditemukan dalam dataset.")
+        print("[WARN] Kolom 'UMUR_TAHUN' tidak ditemukan dalam dataset.")
 
     # Handling Missing Values
     print("[INFO] Mengecek dan menangani Missing Values...")
@@ -47,7 +52,7 @@ def run_preprocessing(filepath='data/raw/BlaBla.csv', output_path='data/processe
 
     # Handling Outlier (IQR Capping)
     print("[INFO] Menangani Outliers pada kolom numerik (Metode IQR Capping)...")
-    exclude_from_capping = ['Umur', 'N', 'target'] 
+    exclude_from_capping = ['UMUR_TAHUN', 'N', 'target'] 
     for col in numeric_cols:
         if col not in exclude_from_capping:
             Q1 = df[col].quantile(0.25)
