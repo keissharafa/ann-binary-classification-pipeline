@@ -26,6 +26,10 @@ def run_preprocessing(filepath='data/raw/BlaBla.csv', output_path='data/processe
     # Custom Encoding Kolom UMUR_TAHUN (Kategori 1 s.d. 5)
     if 'UMUR_TAHUN' in df.columns:
         print("[INFO] Melakukan custom encoding pada kolom 'UMUR_TAHUN'...")
+        # Konversi paksa ke numerik (teks non-angka/spasi akan jadi NaN lalu diisi median)
+        df['UMUR_TAHUN'] = pd.to_numeric(df['UMUR_TAHUN'], errors='coerce')
+        df['UMUR_TAHUN'] = df['UMUR_TAHUN'].fillna(df['UMUR_TAHUN'].median())
+
         conditions = [
             (df['UMUR_TAHUN'] <= 20),
             (df['UMUR_TAHUN'] >= 21) & (df['UMUR_TAHUN'] <= 30),
